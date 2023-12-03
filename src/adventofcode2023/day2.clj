@@ -3,12 +3,10 @@
             [adventofcode2023.utils :as u]))
 
 
-(def input (u/get-lines "resources/day2.txt"))
 (def input (u/get-lines "resources/day2.pt1.txt"))
+(def input (u/get-lines "resources/day2.txt"))
 
-(let [sample-line "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"
-
-      parse-cube
+(let [parse-cube
       ;; Parse a single cube (gives color as key and count)
       (fn[s]
         (let [[cnt color] (str/split (str/trim s) #" ")]
@@ -24,8 +22,9 @@
                      (map parse-set sets)))
 
       parse-game (fn[s]
+                   (println s)
                    (let [[_ id sets] 
-                         (re-find #"Game (\d):(.*)" s)]
+                         (re-find #"Game (\d+):(.*)" s)]
                      {:id (Integer/parseInt id)
                       :sets (parse-sets sets) }))
 
@@ -54,10 +53,9 @@
                      game]
                    (assoc game :possible? (game-possible? bag game))) 
       ]
-
   (let [games (map parse-game input)
         game (first games)
         set1 (first(:sets game))]
     {:bag bag
-     :pt1-answer (reduce + (map :id (filter :possible? (map #(check-game bag %) games))))})
+     :pt1-answer (reduce + (map :id (filter :possible? (map #(check-game bag %) games))))}) ; -> 2476
   )
