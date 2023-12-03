@@ -32,22 +32,31 @@
       ;; set structure
       bag {:red 12, :green 13, :blue 14}
 
-      set-possible? (fn[set-input
-                        limit]
+      set-possible? (fn[limit
+                        set-input]
                       (let [ks (keys limit)
                             check-color (fn[cnt lim] ; Returns check structure if no color in input, compare with 0
                                           {:inp cnt :lim lim
                                            :check (<= (if cnt cnt 0) lim)})]
-                        (every? :check (map #(check-color
-                                              (% set-input)
-                                              (% limit)) ks))))
+                        (every? :check
+                                (map #(check-color
+                                       (% set-input)
+                                       (% limit)) ks))
+                        ))
+
+      game-possible? (fn[bag
+                         game]
+                       (every? #(set-possible? bag %) (:sets game))
+                       ) 
+
       ]
 
   (let [game (parse-game sample-line)
         set1 (first(:sets game))]
     {:bag bag
      :set set1
-     :possible? (set-possible? set1 bag  )
+     ;;    :set-possible (set-possible? bag set1)
+     :possible? (game-possible? bag game)
      })
 
   )
