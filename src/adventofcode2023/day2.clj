@@ -20,19 +20,13 @@
 
       parse-sets (fn[s]
                    (let [sets (str/split s #";")]
-                     (count sets)))
-
-      game (re-find #"Game (\d):" sample-line)
+                     (map parse-set sets)))
 
       parse-game (fn[s]
-                   (let [r (re-find #"Game (\d):.*" s)]
-                     r
-                     ))
-
-      parse-game (fn[s]
-                   (let [[_ id] 
-                         (re-find #"Game (\d):" s)]
-                     {:id (Integer/parseInt id)}))
+                   (let [[_ id sets] 
+                         (re-find #"Game (\d):(.*)" s)]
+                     {:id (Integer/parseInt id)
+                      :sets (parse-sets sets) }))
       ]
 
   (re-find #"Game (\d+):" sample-line)
