@@ -8,15 +8,15 @@
 (let [sample-line "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"
 
       parse-cube
-      ;; Parse a single cube (gives count and color)
+      ;; Parse a single cube (gives color as key and count)
       (fn[s]
         (let [[cnt color] (str/split (str/trim s) #" ")]
-          {:count (Integer/parseInt cnt)
-           :color (keyword color)}))
+          {(keyword color) (Integer/parseInt cnt) }))
 
       parse-set (fn[s]
                   (let [cubes (str/split s #",")]
-                    (map parse-cube cubes)))
+                    (reduce merge
+                            (map parse-cube cubes))))
 
       parse-sets (fn[s]
                    (let [sets (str/split s #";")]
@@ -29,15 +29,4 @@
                       :sets (parse-sets sets) }))
       ]
 
-  (re-find #"Game (\d+):" sample-line)
-  (parse-game sample-line)
-
-  ;;  (parse-set "3 blue, 4 red")
-
-
-  ;;(parse-cube "3 blue")
-  
-
-  ;;  (parse-sets "3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green")
-
-  )
+  (parse-game sample-line))
