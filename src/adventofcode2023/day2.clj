@@ -17,12 +17,23 @@
                     (reduce merge
                             (map parse-cube cubes))))
 
+      complete-set (fn[set-input]
+                     ;; completes a set with all 'colors' such that
+                     (let [colors [:blue :red :green]
+                           add-if-not-present (fn[cube-map
+                                                  k]
+                                                (if (k cube-map)
+                                                  cube-map
+                                                  (assoc cube-map k 0)))]
+                       (reduce merge
+                               (map #(add-if-not-present set-input %) colors))))
+
       parse-sets (fn[s]
                    (let [sets (str/split s #";")]
-                     (map parse-set sets)))
+                     (map #(-> % parse-set complete-set) sets)))
 
       parse-game (fn[s]
-                   (println s)
+                   ;; (println s)
                    (let [[_ id sets] 
                          (re-find #"Game (\d+):(.*)" s)]
                      {:id (Integer/parseInt id)
@@ -37,7 +48,7 @@
                       (let [ks (keys limit)
                             check-color (fn[cnt lim] ; Returns check structure if no color in input, compare with 0
                                           {:inp cnt :lim lim
-                                           :check (<= (if cnt cnt 0) lim)})]
+                                           :check (<= cnt lim)})]
                         (every? :check
                                 (map #(check-color
                                        (% set-input)
@@ -55,7 +66,16 @@
       ]
   (let [games (map parse-game input)
         game (first games)
-        set1 (first(:sets game))]
-    {:bag bag
-     :pt1-answer (reduce + (map :id (filter :possible? (map #(check-game bag %) games))))}) ; -> 2476
+        set1 (nth (:sets game) 2)
+
+
+        listify (fn[game])
+        ]
+    {
+     :pt1-answer (reduce + (map :id (filter :possible? (map #(check-game bag %) games)))) ; -> 2476
+
+     :in set1
+     :out (complete-set set1)
+
+     })
   )
