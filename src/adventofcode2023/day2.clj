@@ -3,6 +3,7 @@
             [adventofcode2023.utils :as u]))
 
 
+(def input (u/get-lines "resources/day2.txt"))
 (def input (u/get-lines "resources/day2.pt1.txt"))
 
 (let [sample-line "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"
@@ -49,14 +50,14 @@
                        (every? #(set-possible? bag %) (:sets game))
                        ) 
 
+      check-game (fn[bag
+                     game]
+                   (assoc game :possible? (game-possible? bag game))) 
       ]
 
-  (let [game (parse-game sample-line)
+  (let [games (map parse-game input)
+        game (first games)
         set1 (first(:sets game))]
     {:bag bag
-     :set set1
-     ;;    :set-possible (set-possible? bag set1)
-     :possible? (game-possible? bag game)
-     })
-
+     :pt1-answer (reduce + (map :id (filter :possible? (map #(check-game bag %) games))))})
   )
