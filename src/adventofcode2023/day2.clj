@@ -27,6 +27,27 @@
                          (re-find #"Game (\d):(.*)" s)]
                      {:id (Integer/parseInt id)
                       :sets (parse-sets sets) }))
+
+      ;; only 12 red cubes, 13 green cubes, and 14 blue cubes
+      ;; set structure
+      bag {:red 12, :green 13, :blue 14}
+
+      set-possible? (fn[set-input
+                        limit]
+                      (let [ks (keys limit)
+                            check-color (fn[cnt lim] ; Returns check structure if no color in input, compare with 0
+                                          {:inp cnt :lim lim
+                                           :check (<= (if cnt cnt 0) lim)})]
+                        (every? :check (map #(check-color
+                                              (% set-input)
+                                              (% limit)) ks))))
       ]
 
-  (parse-game sample-line))
+  (let [game (parse-game sample-line)
+        set1 (first(:sets game))]
+    {:bag bag
+     :set set1
+     :possible? (set-possible? set1 bag  )
+     })
+
+  )
