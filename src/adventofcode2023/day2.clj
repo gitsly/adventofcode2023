@@ -60,22 +60,27 @@
                        (every? #(set-possible? bag %) (:sets game))
                        ) 
 
-      check-game (fn[bag
-                     game]
+      check-game (fn [bag
+                      game]
                    (assoc game :possible? (game-possible? bag game))) 
+
+      game-min-cubes (fn [game]
+                       (let [sets (:sets game)
+                             ks (keys (first sets))]
+                         (reduce merge
+                                 (for [k ks]
+                                   { k (apply max (map k sets)) }))
+
+                         ))
+      game-power (fn [game]
+                   (reduce * 
+                           (vals
+                            (game-min-cubes game))))
+
       ]
-  (let [games (map parse-game input)
-        game (first games)
-        set1 (nth (:sets game) 2)
-
-
-        listify (fn[game])
-        ]
+  (let [games (map parse-game input)]
     {
+     ;; In game 1, the game could have been played with as few as 4 red, 2 green, and 6 blue cubes
      :pt1-answer (reduce + (map :id (filter :possible? (map #(check-game bag %) games)))) ; -> 2476
-
-     :in set1
-     :out (complete-set set1)
-
-     })
-  )
+     :pt2-answer (reduce + (map game-power games)) ; Pt2 answer 54911
+     }))
