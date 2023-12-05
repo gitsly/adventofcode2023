@@ -5,6 +5,19 @@
 
 (def input (u/get-lines "resources/day3.sample.txt"))
 
+(comment
+  "467..114..
+  ...*......
+  ..35..633.
+  ......#...
+  617*......
+  .....+.58.
+  ..592.....
+  ......755.
+  ...$.*....
+  .664.598..")
+
+
 (let [parse-char (fn [ch]
                    (let [ch (str ch)]
                      (cond
@@ -15,21 +28,31 @@
 
       parse-line (fn[line
                      y]
-                   (for [[ch x] (zipmap line (range))]
-                     {:x x
-                      :y y
-                      :char (parse-char ch)}))
+                   (remove nil?
+                           (for [[ch x] (map vector line (range))]
+                             (when-let [ch (parse-char ch)]
+                               {
+                                :x x
+                                :y y
+                                :char ch
+                                }))))
 
-      parse-input (fn [inp]
-                    (flatten
-                     (for [[line y] (zipmap inp (range))]
-                       (parse-line line y))))
+      parse-input (fn [inp] (flatten
+                             (for [[line y] (map vector inp (range))]
+                               (parse-line line y))))
       ;;  (parse-line (first input) 0)
 
       ]
 
   ;; (map :char) 
-  (parse-line (nth input 5) 5)
+
+  (parse-char (first "4"))
+  (map :x (parse-line (nth input 5) 5))
+
+  (count
+   (parse-input input)) 
+  
+
 
   ;;  (filter #(= (:y %) 5)
   ;;          (parse-input input))
