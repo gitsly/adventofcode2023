@@ -8,18 +8,37 @@
 (let [parse-char (fn [ch]
                    (let [ch (str ch)]
                      (cond
+                       (re-matches #"[^\d^\.]" ch) {:sym ch }
                        (re-matches #"\." ch) nil
-                       (re-matches #"\d" ch) ch)))
+                       (re-matches #"\d" ch) ch
+                       )))
 
       parse-line (fn[line
                      y]
                    (for [[ch x] (zipmap line (range))]
                      {:x x
                       :y y
-                      :char (parse-char ch)}))]
+                      :char (parse-char ch)}))
 
-  (parse-line (first input) 0)
+      parse-input (fn [inp]
+                    (flatten
+                     (for [[line y] (zipmap inp (range))]
+                       (parse-line line y))))
+      ;;  (parse-line (first input) 0)
 
+      ]
+
+  ;; (map :char) 
+  (parse-line (nth input 5) 5)
+
+  ;;  (filter #(= (:y %) 5)
+  ;;          (parse-input input))
 
   )
 
+
+(map 
+ #(re-matches #"[^\d^\.]" %)
+ ["!"
+  "."
+  "1"]) 
