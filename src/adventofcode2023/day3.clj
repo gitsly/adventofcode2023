@@ -9,29 +9,49 @@
 (map println input)
 
 (let [parse-char (fn [ch]
-                   (let [ch (str ch)]
+                   (let [ch-as-str (str ch)]
                      (cond
-                       (re-matches #"[^\d^\.]" ch) {:sym ch }
-                       (re-matches #"\." ch) nil
-                       (re-matches #"\d" ch) ch
+                       (re-matches #"[^\d^\.]" ch-as-str) {:sym ch }
+                       (re-matches #"\." ch-as-str) nil
+                       (re-matches #"\d" ch-as-str) ch
                        )))
 
       parse-line (fn[line
                      y]
-                   (remove nil?
-                           (for [[ch x] (map vector line (range))]
-                             (when-let [ch (parse-char ch)]
-                               {
-                                :x x
-                                :y y
-                                :char ch
-                                }))))
+                   (loop [line line
+                          res []
+                          x 0
+                          prev nil
+                          grp 0]
+                     (if (empty? line)
+                       res
+                       (let [ch (parse-char (first line))
+                             new-grp (if (and (not (char? ch))
+                                              (not (nil? prev)))
+                                       (inc grp)
+                                       grp)
+                             item {:x x
+                                   :y y
+                                   :char ch
+                                   :grp (if (not (:sym ch))
+                                          grp)
+                                   }]
+
+                         (recur (rest line)
+                                (if (not (nil? ch))
+                                  (conj res item)
+                                  res)
+                                (inc x) ; x offset
+                                (first line) ; previous character
+                                new-grp
+
+                                ))))
+                   )
 
       parse-input (fn [inp] (flatten
                              (for [[line y] (map vector inp (range))]
                                (parse-line line y))))
 
-      items (vec (parse-input input))
 
       diff (fn[a b]
              "Calculates the difference between two numbers"
@@ -65,10 +85,15 @@
                                curr-set
                                )))))
 
+      ;; items (vec (parse-input input))
       ]
 
-  (map :char 
-       (find-seqs items))
-  )
+  ;; (parse-line (nth input 4) 0)
+  (parse-line  
+   ".664#598.5"
+   0)
+  ;;  (map :char 
+  ;;       (find-seqs items))
 
+  )
 
