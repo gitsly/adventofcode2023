@@ -62,12 +62,12 @@
              "Calculates the difference between two numbers"
              (Math/abs (- a b)))
 
-      is-close? (fn [a b]
-                  "Checks two items for closeness"
-                  (if (and (<= (diff (:x a) (:x b)) 1)
-                           (<= (diff (:y a) (:y b)) 1))
-                    true
-                    false))
+      is-adjacent? (fn [a b]
+                     "Checks two items for closeness"
+                     (if (and (<= (diff (:x a) (:x b)) 1)
+                              (<= (diff (:y a) (:y b)) 1))
+                       true
+                       false))
 
       items (vec (parse-input input))
 
@@ -76,15 +76,37 @@
       number-groups (for [[k v]
                           (filter #(not (nil? (first %)))
                                   (group-by :grp items))] v)
-
+      symbols (first (for [[k v]
+                           (filter #(nil? (first %))
+                                   (group-by :grp items))] v))
 
 
       ] ;; Goal: find numbers adjacent to a symbol and sum them up.
 
+
+  (map #(-> % :char :sym) 
+       symbols)
+
   ;; get "numbers" from 2D map data"
-  (map
-   #(map :char %)
-   number-groups)
+  (let [symbols symbols
+        process-grp (fn[item-list]
+                      (let [num (Integer/parseInt
+                                 (apply str
+                                        (map :char 
+                                             item-list)))
+
+                            adjacent (some true? (for [ch item-list
+                                                       sy symbols]
+                                                   (is-adjacent? ch sy)))
+                            ]
+                        {:num num
+                         :adjacent adjacent 
+                         }))
+
+        ]
+    (map process-grp number-groups))
+
+  
 
   )
 
