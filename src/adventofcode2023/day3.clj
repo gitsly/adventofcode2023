@@ -47,17 +47,28 @@
       find-seqs (fn [col]
                   "Find sequences of linked digits in collection of items"
                   (loop [prev nil
-                         col col]
-                    (let [curr (first col)]
-                      (println "Prev:" (:char prev) ",Curr: " (:char curr) "")
+                         col col
+                         all-set []
+                         curr-set []]
+                    (let [curr (first col)
+                          collect-if-close (fn [prv c]
+                                             (when-let [p prv]
+                                               (if (is-close? p c)
+                                                 c)))
+                          ]
+                      ;;                      (println "Prev:" (:char prev) ", Curr: " (:char curr) "")
                       (if (empty? col)
-                        nil
-                        (recur (first col) (rest col))))))
+                        all-set                                        ; end recursion
+                        (recur (first col)
+                               (rest col)
+                               (conj all-set (collect-if-close prev curr))
+                               curr-set
+                               )))))
 
       ]
 
-  (find-seqs items)
+  (map :char 
+       (find-seqs items))
   )
-
 
 
