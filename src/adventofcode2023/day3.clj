@@ -80,33 +80,29 @@
                            (filter #(nil? (first %))
                                    (group-by :grp items))] v))
 
+      process-grp (fn[item-list
+                      symbols]
+                    (let [num (Integer/parseInt
+                               (apply str
+                                      (map :char 
+                                           item-list)))
 
-      ] ;; Goal: find numbers adjacent to a symbol and sum them up.
+                          adjacent (some true? (for [ch item-list
+                                                     sy symbols]
+                                                 (is-adjacent? ch sy)))
+                          ]
+                      {:num num
+                       :adjacent adjacent }))
 
+      ] 
 
-  (map #(-> % :char :sym) 
-       symbols)
+  ;; finds numbers adjacent to a symbol and sum them up.
+  (reduce + 
+          (map :num
+               (filter :adjacent 
+                       (map #(process-grp % symbols)number-groups))))
 
-  ;; get "numbers" from 2D map data"
-  (let [symbols symbols
-        process-grp (fn[item-list]
-                      (let [num (Integer/parseInt
-                                 (apply str
-                                        (map :char 
-                                             item-list)))
-
-                            adjacent (some true? (for [ch item-list
-                                                       sy symbols]
-                                                   (is-adjacent? ch sy)))
-                            ]
-                        {:num num
-                         :adjacent adjacent 
-                         }))
-
-        ]
-    (map process-grp number-groups))
-
-  
+                                        ; 1110045 your answer is too high
 
   )
 
