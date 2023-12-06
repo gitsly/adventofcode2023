@@ -4,19 +4,9 @@
 
 
 (def input (u/get-lines "resources/day3.sample.txt"))
+(def input (u/get-lines "resources/day3.txt"))
 
-(comment
-  "467..114..
-  ...*...... (index 6)
-  ..35..633. 
-  ......#...
-  617*......
-  .....+.58.
-  ..592.....
-  ......755.
-  ...$.*....
-  .664.598..")
-
+(map println input)
 
 (let [parse-char (fn [ch]
                    (let [ch (str ch)]
@@ -44,25 +34,29 @@
       items (vec (parse-input input))
 
       diff (fn[a b]
+             "Calculates the difference between two numbers"
              (Math/abs (- a b)))
 
-      is-close? (fn [a
-                     b]
+      is-close? (fn [a b]
                   "Checks two items for closeness"
                   (if (and (<= (diff (:x a) (:x b)) 1)
                            (<= (diff (:y a) (:y b)) 1))
                     true
                     false))
+
+      find-seqs (fn [col]
+                  "Find sequences of linked digits in collection of items"
+                  (loop [prev nil
+                         col col]
+                    (let [curr (first col)]
+                      (println "Prev:" (:char prev) ",Curr: " (:char curr) "")
+                      (if (empty? col)
+                        nil
+                        (recur (first col) (rest col))))))
+
       ]
 
-  (let [a (get items 6)
-        b (get items 8)]
-
-    {:a a
-     :b b
-     :is-close? (is-close? a b)}
-    )
-
+  (find-seqs items)
   )
 
 
