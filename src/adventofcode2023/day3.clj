@@ -7,8 +7,8 @@
 
 (comment
   "467..114..
-  ...*......
-  ..35..633.
+  ...*...... (index 6)
+  ..35..633. 
   ......#...
   617*......
   .....+.58.
@@ -41,10 +41,27 @@
                              (for [[line y] (map vector inp (range))]
                                (parse-line line y))))
 
-      items (parse-input input)
+      items (vec (parse-input input))
+
+      diff (fn[a b]
+             (Math/abs (- a b)))
+
+      is-close? (fn [a
+                     b]
+                  "Checks two items for closeness"
+                  (if (and (<= (diff (:x a) (:x b)) 1)
+                           (<= (diff (:y a) (:y b)) 1))
+                    true
+                    false))
       ]
 
-  (take 3 (drop 10 items)) 
+  (let [a (get items 6)
+        b (get items 8)]
+
+    {:a a
+     :b b
+     :is-close? (is-close? a b)}
+    )
 
   )
 
