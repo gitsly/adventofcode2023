@@ -16,6 +16,10 @@
                        (re-matches #"\d" ch-as-str) ch
                        )))
 
+      get-grp-id (fn[x y]
+                   "Return the row col as keyword"
+                   (keyword (str y x)))
+
       parse-line (fn[line
                      y]
                    (loop [line line
@@ -34,7 +38,7 @@
                                    :y y
                                    :char ch
                                    :grp (if (not (:sym ch))
-                                          grp)
+                                          (get-grp-id grp y))
                                    }]
 
                          (recur (rest line)
@@ -47,6 +51,7 @@
 
                                 ))))
                    )
+
 
       parse-input (fn [inp] (flatten
                              (for [[line y] (map vector inp (range))]
@@ -67,12 +72,23 @@
       items (vec (parse-input input))
 
       groups (group-by :grp items)
+
+      number-groups (for [[k v]
+                          (filter #(not (nil? (first %)))
+                                  (group-by :grp items))]
+                      {:grp k
+                       :items v })
+
+
+
       ] ;; Goal: find numbers adjacent to a symbol and sum them up.
 
-  (for [[k v] (group-by :grp items)]
-    {:grp k
-     :items v })))
+  ;; get "numbers" from 2D map data"
+  (map 
+   #(map :char
+         (:items %)) number-groups)
 
 
-)
+  )
+
 
