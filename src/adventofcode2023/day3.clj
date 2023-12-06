@@ -40,28 +40,13 @@
       parse-input (fn [inp] (flatten
                              (for [[line y] (map vector inp (range))]
                                (parse-line line y))))
-      ;;  (parse-line (first input) 0)
 
+      items (parse-input input)
       ]
 
-  ;; (map :char) 
-
-  (parse-char (first "4"))
-  (map :x (parse-line (nth input 5) 5))
-
-  (count
-   (parse-input input)) 
-  
-
-
-  ;;  (filter #(= (:y %) 5)
-  ;;          (parse-input input))
+  (take 3 (drop 10 items)) 
 
   )
 
 
-(map 
- #(re-matches #"[^\d^\.]" %)
- ["!"
-  "."
-  "1"]) 
+
