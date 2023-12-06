@@ -64,36 +64,15 @@
                     true
                     false))
 
-      find-seqs (fn [col]
-                  "Find sequences of linked digits in collection of items"
-                  (loop [prev nil
-                         col col
-                         all-set []
-                         curr-set []]
-                    (let [curr (first col)
-                          collect-if-close (fn [prv c]
-                                             (when-let [p prv]
-                                               (if (is-close? p c)
-                                                 c)))
-                          ]
-                      ;;                      (println "Prev:" (:char prev) ", Curr: " (:char curr) "")
-                      (if (empty? col)
-                        all-set                                        ; end recursion
-                        (recur (first col)
-                               (rest col)
-                               (conj all-set (collect-if-close prev curr))
-                               curr-set
-                               )))))
+      items (vec (parse-input input))
 
-      ;; items (vec (parse-input input))
-      ]
+      groups (group-by :grp items)
+      ] ;; Goal: find numbers adjacent to a symbol and sum them up.
 
-  ;; (parse-line (nth input 4) 0)
-  (parse-line  
-   ".664#598.5"
-   0)
-  ;;  (map :char 
-  ;;       (find-seqs items))
+  (for [[k v] (group-by :grp items)]
+    {:grp k
+     :items v })))
 
-  )
+
+)
 
