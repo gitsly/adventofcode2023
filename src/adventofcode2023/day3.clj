@@ -75,19 +75,16 @@
 
       number-groups (for [[k v]
                           (filter #(not (nil? (first %)))
-                                  (group-by :grp items))]
-                      {:grp k
-                       :items v })
+                                  (group-by :grp items))] v)
 
 
 
       ] ;; Goal: find numbers adjacent to a symbol and sum them up.
 
   ;; get "numbers" from 2D map data"
-  (map 
-   #(map :char
-         (:items %)) number-groups)
-
+  (map
+   #(map :char %)
+   number-groups)
 
   )
 
