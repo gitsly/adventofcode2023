@@ -4,7 +4,33 @@
 
 
 (def input (u/get-lines "resources/day3.sample.txt"))
+
 (def input (u/get-lines "resources/day3.txt"))
+
+(def input ["617......T"
+            ".......58."
+            ".52¤1#23.."
+            "......755."])
+
+(def input [".........."
+            ".........."
+            ".........."
+            ".........."
+            ".........."])
+
+(def input ["...1......"
+            "..1*1....."
+            "...1......"
+            ".........."
+            ".........."])
+
+(def input [".........."
+            ".........."
+            ".........1"
+            "........*."
+            ".......123"])
+
+
 
 (map println input)
 
@@ -69,10 +95,6 @@
                        true
                        false))
 
-      input ["617......T"
-             ".......58."
-             ".52¤1#23.."
-             "......755."]
 
       items (vec (parse-input input))
 
@@ -99,14 +121,35 @@
                       {:num num
                        :adjacent adjacent }))
 
+      all-characters-from-input (keys
+                                 (frequencies 
+                                  (flatten
+                                   (map #(vec  %) input))))
+
       ] 
 
   ;; finds numbers adjacent to a symbol and sum them up.
+  ;;  (reduce +) 
   (map :num
        (filter :adjacent 
                (map #(process-grp % symbols)number-groups)))
 
                                         ; 1110045 your answer is too high
+
+  ;; Validate symbols
+  (map println 
+       (for [ch all-characters-from-input]
+         {:in ch
+          :out (parse-char ch)}))
+
+  ;; Ideas: perhaps the longer x or y screws things up (validate spans) -> OK
+  {
+   :xmin (apply min (map :x items))
+   :ymin (apply min (map :y items))
+   :xmax (apply max (map :x items)) ;-> 139
+   :ymax (apply max (map :y items))
+   :count-row (count (first input))
+   }
 
   )
 
