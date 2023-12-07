@@ -69,6 +69,11 @@
                        true
                        false))
 
+      input ["617......T"
+             ".......58."
+             ".52¤1#23.."
+             "......755."]
+
       items (vec (parse-input input))
 
       groups (group-by :grp items)
@@ -97,10 +102,9 @@
       ] 
 
   ;; finds numbers adjacent to a symbol and sum them up.
-  (reduce + 
-          (map :num
-               (filter :adjacent 
-                       (map #(process-grp % symbols)number-groups))))
+  (map :num
+       (filter :adjacent 
+               (map #(process-grp % symbols)number-groups)))
 
                                         ; 1110045 your answer is too high
 
