@@ -4,7 +4,33 @@
 
 
 (def input (u/get-lines "resources/day3.sample.txt"))
+
 (def input (u/get-lines "resources/day3.txt"))
+
+(def input ["617......T"
+            ".......58."
+            ".52¤1#23.."
+            "......755."])
+
+(def input [".........."
+            ".........."
+            ".........."
+            ".........."
+            ".........."])
+
+(def input ["...1......"
+            "..1*1....."
+            "...1......"
+            ".........."
+            ".........."])
+
+(def input [".........."
+            ".........."
+            ".........1"
+            "........*."
+            ".......123"])
+
+
 
 (map println input)
 
@@ -18,7 +44,7 @@
 
       get-grp-id (fn[x y]
                    "Return the row col as keyword"
-                   (keyword (str y x)))
+                   (keyword (str y "_" x)))
 
       parse-line (fn[line
                      y]
@@ -69,6 +95,7 @@
                        true
                        false))
 
+
       items (vec (parse-input input))
 
       groups (group-by :grp items)
@@ -94,16 +121,21 @@
                       {:num num
                        :adjacent adjacent }))
 
+      all-characters-from-input (keys
+                                 (frequencies 
+                                  (flatten
+                                   (map #(vec  %) input))))
+
       ] 
 
   ;; finds numbers adjacent to a symbol and sum them up.
   (reduce + 
           (map :num
                (filter :adjacent 
-                       (map #(process-grp % symbols)number-groups))))
-
-                                        ; 1110045 your answer is too high
+                       (map #(process-grp % symbols)number-groups)))) ; 1110045 your answer is too high
 
   )
+;;-- 531932 (with better key gen-) Correct!
+
 
 
