@@ -44,7 +44,7 @@
 
       get-grp-id (fn[x y]
                    "Return the row col as keyword"
-                   (keyword (str y x)))
+                   (keyword (str y "_" x)))
 
       parse-line (fn[line
                      y]
@@ -129,28 +129,13 @@
       ] 
 
   ;; finds numbers adjacent to a symbol and sum them up.
-  ;;  (reduce +) 
-  (map :num
-       (filter :adjacent 
-               (map #(process-grp % symbols)number-groups)))
-
-                                        ; 1110045 your answer is too high
-
-  ;; Validate symbols
-  (map println 
-       (for [ch all-characters-from-input]
-         {:in ch
-          :out (parse-char ch)}))
-
-  ;; Ideas: perhaps the longer x or y screws things up (validate spans) -> OK
-  {
-   :xmin (apply min (map :x items))
-   :ymin (apply min (map :y items))
-   :xmax (apply max (map :x items)) ;-> 139
-   :ymax (apply max (map :y items))
-   :count-row (count (first input))
-   }
+  (reduce + 
+          (map :num
+               (filter :adjacent 
+                       (map #(process-grp % symbols)number-groups)))) ; 1110045 your answer is too high
 
   )
+;;-- 531932 (with better key gen-) Correct!
+
 
 
