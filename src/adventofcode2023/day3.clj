@@ -149,11 +149,39 @@
                       (map trans items)))
       ] 
 
-  (map #(select-keys % [:char :num]) (add-numbers items)))
+  ;;  (map #(select-keys % [:char :num]) (add-numbers items)))
 
-  ) 
+  (let[stars (filter is-star?  items)
+
+       test-subject (nth stars 2)
+
+       numbers (add-numbers number-items)
+
+       get-adjacent-numbers (fn [item]
+                              (for [[k v] (group-by :grp 
+                                                    (get-adjacent item numbers))]
+                                (:num (first v))))
+
+       create-gear-cand (fn[item]
+                          (assoc item :adj-num (vec(get-adjacent-numbers item))))
+
+       calc-gear-ratio (fn[item]
+                         (assoc item :ratio (reduce * (:adj-num item))))
+
+       ]
+
+    (reduce + 
+            (map :ratio
+                 (map calc-gear-ratio 
+                      (filter #(= 2 (count (:adj-num %)))
+                              (map create-gear-cand stars)))))
+
+    )) 
 )
 ;;-- 531932 (with better key gen-) Correct!
+
+;; calculate sum of all the gear ratios in the engine schematic
+;; sample input: 467835
 
 
 
