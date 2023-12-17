@@ -1,6 +1,7 @@
 (ns adventofcode2023.day4
   (:require [clojure.string :as str]
-            [adventofcode2023.utils :as u]))
+            [adventofcode2023.utils :as u]
+            [clojure.set :as set]))
 
 (def input (u/get-lines "resources/day4.sample.txt"))
 (def input (u/get-lines "resources/day4.sample.txt"))
@@ -16,17 +17,40 @@
                          [left have] (str/split s #"\|" )
                          [cardinfo winning] (str/split left #":" )]
 
-                     {:winning-numbers (to-int-vec winning)
+                     {:info cardinfo
+                      :win (to-int-vec winning)
                       :have (to-int-vec have)
-                      }
+                      }))
 
+      winning-numbers (fn [card]
+                        "Updates card with :match data"
+                        (let [{win :win have :have} card
+                              union (vec (set/intersection (set have) (set win)))
+                              ]
+                          (assoc card :match union)
+                          ))
 
-                     ))
-
+      points (fn [card]
+               "Updates card with :points data"
+               (let [p (count (:match card))
+                     pts (int
+                          (cond
+                            (= p 0) 0
+                            (> p 0) (Math/pow 2 (dec p))))]
+                 (assoc card :points pts)))
 
       ]
 
-  (map parse-card input)
+  ;;  48, 83, 17, and 86 => 8 points
+
+  ;;  (reduce dbl (range 4) )
+
+  (points
+   (winning-numbers 
+    (first
+     (map parse-card input))))
+
+
 
   )
 
