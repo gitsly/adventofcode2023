@@ -3,8 +3,8 @@
             [adventofcode2023.utils :as u]
             [clojure.set :as set]))
 
-(def input (u/get-lines "resources/day4.txt"))
 (def input (u/get-lines "resources/day4.sample.txt"))
+(def input (u/get-lines "resources/day4.txt"))
 
 
 (let [str  "Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11"
@@ -17,7 +17,7 @@
                          [left have] (str/split s #"\|" )
                          [cardinfo winning] (str/split left #":" )]
 
-                     {:info cardinfo
+                     {:id cardinfo
                       :win (to-int-vec winning)
                       :have (to-int-vec have)
                       }))
@@ -43,16 +43,33 @@
       get-card-info  (fn [line]
                        (-> line
                            parse-card
-                           winning-numbers
-                           points))
-      
-      pt-1 (reduce + 
-                   (map :points 
-                        (map get-card-info input))) ; 18619
+                           winning-numbers))
 
+      all-cards (map get-card-info input)
+      
+
+      
       ]
 
-  pt-1
+  (defn find-all-wins[cards
+                      result]
+    (let [card (first cards)
+          remaining-cards (rest cards)
+          match-count (count (:match card))
+          copies (take match-count remaining-cards)]
+
+      (println (:id card) "wins copies:" (map :id copies))
+
+      (if (empty? cards)
+        result
+        (find-all-wins remaining-cards result) )
+
+      ))
+
+
+  (find-all-wins all-cards [])
+
   )
+
 
 
