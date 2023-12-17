@@ -3,7 +3,7 @@
             [adventofcode2023.utils :as u]
             [clojure.set :as set]))
 
-(def input (u/get-lines "resources/day4.sample.txt"))
+(def input (u/get-lines "resources/day4.txt"))
 (def input (u/get-lines "resources/day4.sample.txt"))
 
 
@@ -39,19 +39,20 @@
                             (> p 0) (Math/pow 2 (dec p))))]
                  (assoc card :points pts)))
 
+
+      get-card-info  (fn [line]
+                       (-> line
+                           parse-card
+                           winning-numbers
+                           points))
+      
+      pt-1 (reduce + 
+                   (map :points 
+                        (map get-card-info input))) ; 18619
+
       ]
 
-  ;;  48, 83, 17, and 86 => 8 points
-
-  ;;  (reduce dbl (range 4) )
-
-  (points
-   (winning-numbers 
-    (first
-     (map parse-card input))))
-
-
-
+  pt-1
   )
 
 
