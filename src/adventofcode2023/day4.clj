@@ -62,7 +62,15 @@
 
       (if (empty? cards)
         result
-        (find-all-wins remaining-cards result) )
+
+        (loop [copies copies]
+          (println "copy:" (:id (first copies)))
+
+          (if (empty? copies)
+            nil
+            (recur (rest copies)))
+          )
+        )
 
       ))
 
