@@ -17,7 +17,7 @@
                          [left have] (str/split s #"\|" )
                          [cardinfo winning] (str/split left #":" )]
 
-                     {:id cardinfo
+                     {:id (let [[_ card-no] (str/split cardinfo #"Card\ +")] (Integer/parseInt card-no))
                       :win (to-int-vec winning)
                       :have (to-int-vec have)
                       }))
@@ -45,7 +45,7 @@
                            parse-card
                            winning-numbers))
 
-      all-cards (map get-card-info input)
+      cards (map get-card-info input)
       
 
       
@@ -59,23 +59,20 @@
           copies (take match-count remaining-cards)]
 
       (println (:id card) "wins copies:" (map :id copies))
-
       (if (empty? cards)
         result
-
-        (loop [copies copies]
-          (println "copy:" (:id (first copies)))
-
-          (if (empty? copies)
-            nil
-            (recur (rest copies)))
-          )
+        (find-all-wins remaining-cards result)
         )
 
       ))
 
 
-  (find-all-wins all-cards [])
+  (find-all-wins cards [])
+
+
+  (drop-while #( < % 4) [1 2 3 4 5])
+
+  (map :id cards)
 
   )
 
