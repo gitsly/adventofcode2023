@@ -71,14 +71,17 @@
     (let [card (first cards)
           remaining-cards (rest cards)
           match-count (count (:match card))
-          copies (take match-count remaining-cards)]
+          copies (take match-count remaining-cards)
+          copy-rem (drop-while #( >= (:id card) (:id %) ) remaining-cards)
+          ]
 
-      (println (:id card) "wins copies:" (map :id copies))
-
-      (let [copy (nth copies 1)
-            copy-rem (drop-while #( >= (:id copy) (:id %) ) remaining-cards)]
-        copy-rem ; remaining cards for 'copy' (to traverse recursively)
+      (println "Card" (:id card) "wins copies:" (map :id copies))
+      (if (empty? cards)
+        result
+        (conj result
+              (find-all-wins copies result))
         )
+
       ))
 
   (map :id 
