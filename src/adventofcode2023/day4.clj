@@ -66,14 +66,23 @@
 
       ))
 
+  (defn find-all-wins[cards
+                      result]
+    (let [card (first cards)
+          remaining-cards (rest cards)
+          match-count (count (:match card))
+          copies (take match-count remaining-cards)]
 
-  (find-all-wins cards [])
+      (println (:id card) "wins copies:" (map :id copies))
 
+      (let [copy (nth copies 1)
+            copy-rem (drop-while #( >= (:id copy) (:id %) ) remaining-cards)]
+        copy-rem ; remaining cards for 'copy' (to traverse recursively)
+        )
+      ))
 
-  (drop-while #( < % 4) [1 2 3 4 5])
-
-  (map :id cards)
-
+  (map :id 
+       (find-all-wins cards []))
   )
 
 
