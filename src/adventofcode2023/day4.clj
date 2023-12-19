@@ -53,20 +53,6 @@
       
       ]
 
-  (defn find-all-wins[cards
-                      result]
-    (let [card (first cards)
-          remaining-cards (rest cards)
-          match-count (count (:match card))
-          copies (take match-count remaining-cards)]
-
-      (println (:id card) "wins copies:" (map :id copies))
-      (if (empty? cards)
-        result
-        (find-all-wins remaining-cards result)
-        )
-
-      ))
 
   (defn find-all-wins[cards
                       result]
@@ -77,18 +63,17 @@
           copy-rem (drop-while #( >= (:id card) (:id %) ) remaining-cards)
           ]
 
-      (println "Card" (:id card) "wins copies:" (map :id copies) "[" result "]")
+      (println "Card" (:id card) "wins copies:" (vec (map :id copies)))
 
       (if (empty? remaining-cards)
-        (println "done")
-        (do
-          (println (:id card))
-          (find-all-wins copies (conj result (:id card) )))
+        result
+        (find-all-wins copies (concat result (conj copies card) ))
         )
 
       ))
 
-  (find-all-wins cards nil)
+  (map :id
+       (find-all-wins cards nil))
 
 
   )
