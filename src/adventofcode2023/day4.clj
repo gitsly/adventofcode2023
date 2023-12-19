@@ -7,6 +7,8 @@
 (def input (u/get-lines "resources/day4.txt"))
 
 
+(map println input)
+
 (let [str  "Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11"
 
       
@@ -75,17 +77,20 @@
           copy-rem (drop-while #( >= (:id card) (:id %) ) remaining-cards)
           ]
 
-      (println "Card" (:id card) "wins copies:" (map :id copies))
-      (if (empty? cards)
-        result
-        (conj result
-              (find-all-wins copies result))
+      (println "Card" (:id card) "wins copies:" (map :id copies) "[" result "]")
+
+      (if (empty? remaining-cards)
+        (println "done")
+        (do
+          (println (:id card))
+          (find-all-wins copies (conj result (:id card) )))
         )
 
       ))
 
-  (map :id 
-       (find-all-wins cards []))
+  (find-all-wins cards nil)
+
+
   )
 
 
