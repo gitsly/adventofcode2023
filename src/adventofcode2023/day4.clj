@@ -53,6 +53,7 @@
 
   (defn find-all-wins[cards
                       result
+                      apa
                       tabs]
     (let [remaining-cards (rest cards)
           ;;          copy-rem (drop-while #( >= (:id card) (:id %) ) remaining-cards)
@@ -65,31 +66,33 @@
       (if (empty? remaining-cards)
         (do 
           (println tab-str "done")
-          result) ; done
+          apa) ; done
         (let [card (first cards)
               match-count (count (:match card))
               copies (take match-count remaining-cards)
-              result (concat result copies )]
+              new-result (concat result copies )]
 
-          (println tab-str "Card" (:id card) "wins copies:" (vec (map :id copies)) "->" (map :id result)) 
+          (println tab-str "Card" (:id card) "wins copies:" (vec (map :id copies)) "->" (map :id new-result)) 
 
           (find-all-wins copies
-                         result
+                         new-result
+                         (concat apa new-result)
                          (inc tabs)))
         
         )
       ))
 
-  (map :id 
-       (loop [cards cards
-              result nil]
-         (if (empty? cards)
-           result
-           (recur
-            (rest cards)
-            (concat 
-             result
-             (find-all-wins cards nil 0))))))
+  (count
+   (map :id 
+        (loop [cards cards
+               result nil]
+          (if (empty? cards)
+            result
+            (recur
+             (rest cards)
+             (concat 
+              result
+              (find-all-wins cards nil nil 0)))))))
 
   )
 
