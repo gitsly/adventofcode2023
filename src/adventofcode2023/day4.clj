@@ -94,6 +94,9 @@
               result
               (find-all-wins cards nil nil 0)))))))
 
+                                        ; 5398 -> to low
+
+
   )
 
 (count
