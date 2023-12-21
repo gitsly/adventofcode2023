@@ -64,7 +64,7 @@
       ;; for affected the recursion
       (if (empty? remaining-cards)
         (do 
-          (println "done")
+          (println tab-str "done")
           result) ; done
         (let [card (first cards)
               match-count (count (:match card))
@@ -81,13 +81,29 @@
       ))
 
   (map :id 
-       (find-all-wins cards nil 0))
-  
+       (loop [cards cards
+              result nil]
+         (if (empty? cards)
+           result
+           (recur
+            (rest cards)
+            (concat 
+             result
+             (find-all-wins cards nil 0))))))
 
   )
 
-
-
-
+(count
+ (concat
+  '(2 3 4 5)
+  '(2 3 4 5 3 4)
+  '(2 3 4 5 3 4 4)
+  '(3 4)
+  '(3 4 4)
+  '(4 5)
+  '(4 5 5)
+  '(5)))
+;; Correct 30 if adding first 1, and last 6.
+;; theory: last can never win anything? we can always include first?
 
 
