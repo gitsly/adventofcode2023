@@ -9,10 +9,7 @@
 
 (map println input)
 
-(let [str  "Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11"
-
-      
-      parse-card (fn[s]
+(let [parse-card (fn[s]
                    (let [to-int-vec (fn[s] (vec (map
                                                  #(Integer/parseInt %)
                                                  (str/split (str/trim s) #"\ +"))))
@@ -55,30 +52,42 @@
 
 
   (defn find-all-wins[cards
-                      result]
+                      result
+                      tabs]
     (let [remaining-cards (rest cards)
           ;;          copy-rem (drop-while #( >= (:id card) (:id %) ) remaining-cards)
+          tab-str (apply str (repeat tabs "  "))
           ]
 
+      ;;      (println tab-str "*cards:" (map :id cards) "result:" (map :id result) "remaining:" (map :id remaining-cards))
 
+      ;; for affected the recursion
       (if (empty? remaining-cards)
-        result ; done
-        (reduce concat 
-                (for [card cards]
-                  (let [match-count (count (:match card))
-                        copies (take match-count remaining-cards)]
-                    (println "Card" (:id card) "wins copies:" (vec (map :id copies)))
-                    (find-all-wins copies (concat result (conj copies card) )))))
-        )
+        (do 
+          (println "done")
+          result) ; done
+        (let [card (first cards)
+              match-count (count (:match card))
+              copies (take match-count remaining-cards)
+              result (concat result copies )]
 
+          (println tab-str "Card" (:id card) "wins copies:" (vec (map :id copies)) "->" (map :id result)) 
+
+          (find-all-wins copies
+                         result
+                         (inc tabs)))
+        
+        )
       ))
 
-  (count 
-   (map :id
-        (find-all-wins cards nil)))
-
+  (map :id 
+       (find-all-wins cards nil 0))
+  
 
   )
+
+
+
 
 
 
