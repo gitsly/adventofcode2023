@@ -87,13 +87,13 @@
       data (parse-input input)
       ]
 
-  ;; (println 
-  ;;  (apply min
-  ;;         (map #(find-location data %) 
-  ;;              (:seeds data))))
+  (println 
+   (apply min
+          (map #(find-location data %) 
+               (:seeds data))))
 
-  (map #(find-location data %) 
-       (:seeds data))
+  ;; (map #(find-location data %) 
+  ;;      (:seeds data))
 
   ;; (map-section
   ;;  (first (:sections data))
