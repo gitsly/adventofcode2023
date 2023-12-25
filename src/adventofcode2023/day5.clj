@@ -21,37 +21,46 @@
                     (let [sections (filter #(not(= '("") %))
                                            (partition-by #(= "" %) lines))
 
+                          parse-int-array (fn [line]
+                                            (map #(Integer/parseInt %) (str/split line #" ")))
+
                           parse-mapping-line (fn[line]
                                                "Returns a map"
                                                (let [get-range (fn[start length] (map #(+ start %) (range length)))
-                                                     [dest-range-start source-range-start range-length]
-                                                     (map #(Integer/parseInt %) (str/split line #" "))]
+                                                     [dest-range-start source-range-start range-length] (parse-int-array line)]
                                                  (zipmap
                                                   (get-range source-range-start range-length)
                                                   (get-range dest-range-start range-length))))
 
                           [seeds & sections] sections
+
+                          parse-seeds (fn [seeds]
+                                        (let[[_ seeds] (str/split seeds #": ")]
+                                          (parse-int-array seeds)))
+
                           parse-section (fn [section]
                                           (let [[_ from to] (re-find  #"(.*)-to-(.*) map" (first section))
-                                                mappings (rest section)
-                                                header {:from (keyword from)
-                                                        :to (keyword to)}]
-                                            (reduce merge 
-                                                    (map parse-mapping-line  mappings))
+                                                mappings (rest section)]
+                                            {:from (keyword from)
+                                             :to (keyword to)
+                                             :map (reduce merge 
+                                                          (map parse-mapping-line mappings))}
 
                                             ))
 
 
                           ]
-
-                      (parse-section
-                       (first sections))))
+                      {:seeds (parse-seeds (first seeds))
+                       :sections (map parse-section sections)
+                       }
+                      ))
 
       ]
 
-  (let [m (parse-input input)]
-    m
-    (m 53) )
+  (let [data (parse-input input)]
+
+    (:seeds data)
+    )
 
   )
 
