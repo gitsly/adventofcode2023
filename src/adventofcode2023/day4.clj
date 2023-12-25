@@ -58,18 +58,23 @@
                         card (u/find-first card-with-id cards)
                         card-count-with-id (count (filter card-with-id result))
                         remaining-cards (drop-while #(<= (:id  %) id) cards)
+                        won-cards (get-won-cards card remaining-cards)
                         ]
-                    (flatten
-                     (repeat card-count-with-id 
-                             (get-won-cards card remaining-cards)))))
+                    (println "Card" id "wins:" (vec (map :id won-cards)) "x" card-count-with-id)
+                    (flatten (repeat card-count-with-id won-cards))))
 
 
       ]
 
-  ;; (map #(select-keys % [:id :match]) cards)
-  (map :id 
-       (win-cards cards 1 cards))
-
+  (count
+   (loop [id 1
+          cards cards
+          result cards]
+     (if (= id (apply max (map :id cards)))
+       result ; done
+       (recur (inc id) cards
+              (concat result (win-cards cards id result)))
+       )))
 
   )
 
