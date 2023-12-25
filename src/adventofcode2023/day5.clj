@@ -3,8 +3,8 @@
             [adventofcode2023.utils :as u]
             [clojure.set :as set]))
 
+(def input (u/get-lines "resources/day5.txt"))
 (def input (u/get-lines "resources/day5.sample.txt"))
-;; (def input (u/get-lines "resources/day5.txt"))
 
 (let [parse-input (fn [lines]
                     (let [sections (filter #(not(= '("") %))
@@ -63,7 +63,7 @@
                           new-val (u/find-first #(not (nil? %))
                                                 (map #(do-single-mapping % v) mappings))]
 
-                      (println "from" from "to" to "->" new-val)
+                      ;; (println "from" from "to" to "->" new-val)
                       (if (nil? new-val)
                         v
                         new-val) 
@@ -87,19 +87,33 @@
       data (parse-input input)
       ]
 
-  (println 
-   (apply min
-          (map #(find-location data %) 
-               (:seeds data))))
+  ;; (println 
+  ;;  (apply min
+  ;;         (map #(find-location data %) 
+  ;;              (:seeds data))))
 
-  ;; (map #(find-location data %) 
-  ;;      (:seeds data))
+  ;; (println 
+  ;;  (apply min
+  ;;         (map #(find-location data %)) 
 
-  ;; (map-section
-  ;;  (first (:sections data))
-  ;;  52)
+  ;; even counting is too much... will bail out, 
+  ;; perhaps reverse the mapping or such to remove ranges from evaluation somehow
+  (count
+   (reduce concat
+           (let [do-seed-range (fn [input]
+                                 (let [[start rng] input]
+                                   (map #(+ start %) (range rng))))
+                 ]
+             (map do-seed-range
+                  (partition 2
+                             (:seeds data))
+                  ))))))
 
-  ;; Seed 79, soil 81
-  ;; Seed 55, soil 57
+;; (map-section
+;;  (first (:sections data))
+;;  52)
 
-  )
+;; Seed 79, soil 81
+;; Seed 55, soil 57
+
+)
