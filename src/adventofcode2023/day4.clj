@@ -46,13 +46,30 @@
       cards (map get-card-info input)
       
 
-      won-cards (fn [card remaining-cards]
-                  (take (count (:match card)) remaining-cards))
+      get-won-cards (fn [card remaining-cards]
+                      (take (count (:match card)) remaining-cards))
       
+
+      win-cards (fn [cards
+                     id
+                     result]
+
+                  (let [card-with-id (fn [c] (= (:id c) id))
+                        card (u/find-first card-with-id cards)
+                        card-count-with-id (count (filter card-with-id result))
+                        remaining-cards (drop-while #(<= (:id  %) id) cards)
+                        ]
+                    (flatten
+                     (repeat card-count-with-id 
+                             (get-won-cards card remaining-cards)))))
+
 
       ]
 
   ;; (map #(select-keys % [:id :match]) cards)
+  (map :id 
+       (win-cards cards 1 cards))
+
 
   )
 
