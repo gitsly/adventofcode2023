@@ -66,15 +66,15 @@
 
       ]
 
-  (count
-   (loop [id 1
-          cards cards
-          result cards]
-     (if (= id (apply max (map :id cards)))
-       result ; done
-       (recur (inc id) cards
-              (concat result (win-cards cards id result)))
-       )))
+  ;; (count
+  ;;  (loop [id 1
+  ;;         cards cards
+  ;;         result cards]
+  ;;    (if (= id (apply max (map :id cards)))
+  ;;      result ; done
+  ;;      (recur (inc id) cards
+  ;;             (concat result (win-cards cards id result)))
+  ;;      )))
 
   )
 
