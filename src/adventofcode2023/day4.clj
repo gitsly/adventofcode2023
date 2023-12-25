@@ -78,19 +78,6 @@
 
   )
 
+
 ;; 5398 -> to low
-
-(count
- (concat
-  '(2 3 4 5)
-  '(2 3 4 5 3 4)
-  '(2 3 4 5 3 4 4)
-  '(3 4)
-  '(3 4 4)
-  '(4 5)
-  '(4 5 5)
-  '(5)))
-;; Correct 30 if adding first 1, and last 6.
-;; theory: last can never win anything? we can always include first?
-
-
+;; 8063216 -> Correct
