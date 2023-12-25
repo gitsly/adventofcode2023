@@ -6,7 +6,6 @@
 (def input (u/get-lines "resources/day4.sample.txt"))
 (def input (u/get-lines "resources/day4.txt"))
 
-
 (map println input)
 
 (let [parse-card (fn[s]
@@ -47,57 +46,17 @@
       cards (map get-card-info input)
       
 
+      won-cards (fn [card remaining-cards]
+                  (take (count (:match card)) remaining-cards))
       
+
       ]
 
-
-  (defn find-all-wins[cards
-                      result
-                      apa
-                      tabs]
-    (let [remaining-cards (rest cards)
-          ;;          copy-rem (drop-while #( >= (:id card) (:id %) ) remaining-cards)
-          tab-str (apply str (repeat tabs "  "))
-          ]
-
-      ;;      (println tab-str "*cards:" (map :id cards) "result:" (map :id result) "remaining:" (map :id remaining-cards))
-
-      ;; for affected the recursion
-      (if (empty? remaining-cards)
-        (do 
-          (println tab-str "done")
-          apa) ; done
-        (let [card (first cards)
-              match-count (count (:match card))
-              copies (take match-count remaining-cards)
-              new-result (concat result copies )]
-
-          (println tab-str "Card" (:id card) "wins copies:" (vec (map :id copies)) "->" (map :id new-result)) 
-
-          (find-all-wins copies
-                         new-result
-                         (concat apa new-result)
-                         (inc tabs)))
-        
-        )
-      ))
-
-  (count
-   (map :id 
-        (loop [cards cards
-               result nil]
-          (if (empty? cards)
-            result
-            (recur
-             (rest cards)
-             (concat 
-              result
-              (find-all-wins cards nil nil 0)))))))
-
-                                        ; 5398 -> to low
-
+  ;; (map #(select-keys % [:id :match]) cards)
 
   )
+
+;; 5398 -> to low
 
 (count
  (concat
