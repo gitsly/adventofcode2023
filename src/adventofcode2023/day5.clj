@@ -22,18 +22,13 @@
                                            (partition-by #(= "" %) lines))
 
                           parse-mapping-line (fn[line]
+                                               "Returns a map"
                                                (let [get-range (fn[start length] (map #(+ start %) (range length)))
                                                      [dest-range-start source-range-start range-length]
                                                      (map #(Integer/parseInt %) (str/split line #" "))]
-
                                                  (zipmap
                                                   (get-range source-range-start range-length)
-                                                  (get-range dest-range-start range-length))
-
-                                                 ))
-
-                          ;; 98 -> 50
-                          ;; 99 -> 51
+                                                  (get-range dest-range-start range-length))))
 
                           [seeds & sections] sections
                           parse-section (fn [section]
@@ -41,8 +36,9 @@
                                                 mappings (rest section)
                                                 header {:from (keyword from)
                                                         :to (keyword to)}]
+                                            (reduce merge 
+                                                    (map parse-mapping-line  mappings))
 
-                                            (parse-mapping-line (first mappings))
                                             ))
 
 
@@ -53,6 +49,9 @@
 
       ]
 
-  ((parse-input input) 99)
+  (let [m (parse-input input)]
+    m
+    (m 53) )
+
   )
 
