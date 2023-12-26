@@ -69,9 +69,9 @@
                         new-val) 
                       ))
 
-      find-location (fn [mapping
+      find-location (fn [data
                          seed]
-                      (let [{sections :sections  } mapping]
+                      (let [{sections :sections  } data]
                         (loop [sections sections
                                val seed]
                           (let [section (first sections)
@@ -84,36 +84,39 @@
                               (recur (rest sections) (map-section section val))))
                           )))
 
+      ;; even counting is too much... will bail out, 
+      ;; perhaps reverse the mapping or such to remove ranges from evaluation somehow
+      all-seeds (fn [data]  (reduce concat
+                                    (let [do-seed-range (fn [input]
+                                                          (let [[start rng] input]
+                                                            (map #(+ start %) (range rng))))
+                                          ]
+                                      (map do-seed-range
+                                           (partition 2
+                                                      (:seeds data))
+                                           ))))
+
+
       data (parse-input input)
       ]
+
 
   ;; (println 
   ;;  (apply min
   ;;         (map #(find-location data %) 
   ;;              (:seeds data))))
 
-  ;; (println 
-  ;;  (apply min
-  ;;         (map #(find-location data %)) 
+  ;; (apply min (map #(find-location data %) (all-seeds data)))  ; -> 46 (sample)
 
-  ;; even counting is too much... will bail out, 
-  ;; perhaps reverse the mapping or such to remove ranges from evaluation somehow
-  (count
-   (reduce concat
-           (let [do-seed-range (fn [input]
-                                 (let [[start rng] input]
-                                   (map #(+ start %) (range rng))))
-                 ]
-             (map do-seed-range
-                  (partition 2
-                             (:seeds data))
-                  ))))))
 
-;; (map-section
-;;  (first (:sections data))
-;;  52)
+  ;; (map-section
+  ;;  (first (:sections data))
+  ;;  52)
 
-;; Seed 79, soil 81
-;; Seed 55, soil 57
+  ;; Seed 79, soil 81
+  ;; Seed 55, soil 57
 
-)
+
+
+
+  )
