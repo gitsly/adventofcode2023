@@ -50,9 +50,12 @@
                           (let [{src :src
                                  dst :dst
                                  rng :rng} mapping
-                                offset (- v src)]
-                            (if (and (>= offset 0) (<= v (+ src rng)))
-                              (+ dst offset))))
+                                offset (- v src)
+                                inside (and (>= offset 0) (<= v (+ src rng)))
+                                new (+ dst offset)]
+                            ;;                            (println "inside:" inside ", offset:" offset, "new:" new)
+                            (if inside
+                              new)))
 
 
       map-section (fn[section
@@ -60,29 +63,28 @@
                     (let [{mappings :map
                            from :from
                            to :to} section
-                          new-val (u/find-first #(not (nil? %))
-                                                (map #(do-single-mapping % v) mappings))]
+                          apas (map #(do-single-mapping % v) mappings)
+                          new-val (u/find-first #(not (nil? %)) apas)]
 
-                      ;; (println "from" from "to" to "->" new-val)
+                      ;;(println section "to" to "->" new-val)
                       (if (nil? new-val)
                         v
                         new-val) 
                       ))
 
-      find-location (fn [data
+      find-location (fn [sections
                          seed]
-                      (let [{sections :sections  } data]
-                        (loop [sections sections
-                               val seed]
-                          (let [section (first sections)
-                                {from :from
-                                 to :to
-                                 mapping :map} section
-                                ]
-                            (if (empty? sections)
-                              val
-                              (recur (rest sections) (map-section section val))))
-                          )))
+                      (loop [sections sections
+                             val seed]
+                        (let [section (first sections)
+                              {from :from
+                               to :to
+                               mapping :map} section
+                              ]
+                          (if (empty? sections)
+                            val
+                            (recur (rest sections) (map-section section val))))
+                        ))
 
       ;; even counting is too much... will bail out, 
       ;; perhaps reverse the mapping or such to remove ranges from evaluation somehow
@@ -96,27 +98,65 @@
                                                       (:seeds data))
                                            ))))
 
-
       data (parse-input input)
-      ]
 
+      reverse-mapping (fn [mapping]
+                        (let [{src :src
+                               dst :dst
+                               rng :rng} mapping]
+                          {:src dst
+                           :dst src
+                           :rng rng}))
+
+      reverse-section (fn [section]
+                        (let [{from :from
+                               to :to
+                               mappings :map} section]
+                          {:from to
+                           :to from
+                           :map (map reverse-mapping mappings)
+                           }))
+
+
+      ]
 
   ;; (println 
   ;;  (apply min
-  ;;         (map #(find-location data %) 
+  ;;         (map #(find-location (:sections data) %) 
   ;;              (:seeds data))))
 
-  ;; (apply min (map #(find-location data %) (all-seeds data)))  ; -> 46 (sample)
+  ;; (apply min (map #(find-location (:sections data) %) (all-seeds data)))  ; -> 46 (sample)
 
-
-  ;; (map-section
-  ;;  (first (:sections data))
-  ;;  52)
 
   ;; Seed 79, soil 81
   ;; Seed 55, soil 57
+  ;; (map-section
+  ;;  (first (:sections data))
+  ;;  79)
+
+  ;; Try reverse mapping
+  ;; (map-section
+  ;;  (reverse-section
+  ;;   (first (:sections data)))
+  ;;  81)
+
+  ;; (update data :sections (map reverse-section ))
+
+  ;; (find-location 
+  ;;  (update data :sections
+  ;;          #(reverse (map reverse-section
+  ;;                         %)))
+  ;;  46)
 
 
+  (let [sections [(reverse-section
+                   (nth  
+                    (reverse
+                     (:sections data))
+                    3))]]
 
+    {:sections sections
+     :val (find-location sections 77)}
+    )
 
   )
