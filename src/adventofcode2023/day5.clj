@@ -86,17 +86,17 @@
                             (recur (rest sections) (map-section section val))))
                         ))
 
+
+      do-range (fn [input]
+                 "takes a list containing start and range, and returns sequence with numbers"
+                 (let [[start rng] input]
+                   (map #(+ start %) (range rng))))
+
       ;; even counting is too much... will bail out, 
       ;; perhaps reverse the mapping or such to remove ranges from evaluation somehow
-      all-seeds (fn [data]  (reduce concat
-                                    (let [do-seed-range (fn [input]
-                                                          (let [[start rng] input]
-                                                            (map #(+ start %) (range rng))))
-                                          ]
-                                      (map do-seed-range
-                                           (partition 2
-                                                      (:seeds data))
-                                           ))))
+      all-seeds (fn [data]  (reduce concat (map do-range
+                                                (partition 2
+                                                           (:seeds data)))))
 
       data (parse-input input)
 
@@ -117,46 +117,73 @@
                            :map (map reverse-mapping mappings)
                            }))
 
-
+      mapping-to-span (fn[mapping]
+                        (let [{src :src
+                               rng :rng} mapping]
+                          [src rng]))
       ]
 
-  ;; (println 
-  ;;  (apply min
-  ;;         (map #(find-location (:sections data) %) 
-  ;;              (:seeds data))))
+  
 
-  ;; (apply min (map #(find-location (:sections data) %) (all-seeds data)))  ; -> 46 (sample)
-
-
-  ;; Seed 79, soil 81
-  ;; Seed 55, soil 57
-  ;; (map-section
-  ;;  (first (:sections data))
-  ;;  79)
-
-  ;; Try reverse mapping
-  ;; (map-section
-  ;;  (reverse-section
-  ;;   (first (:sections data)))
-  ;;  81)
-
-  ;; (update data :sections (map reverse-section ))
-
-  ;; (find-location 
-  ;;  (update data :sections
-  ;;          #(reverse (map reverse-section
-  ;;                         %)))
-  ;;  46)
+  (let [reverse-sections (:sections
+                          (update data :sections
+                                  #(reverse (map reverse-section
+                                                 %))))
 
 
-  (let [sections [(reverse-section
-                   (nth  
-                    (reverse
-                     (:sections data))
-                    3))]]
+        ;; Target
+        seed-ranges  (sort-by #(first %) (partition 2 (:seeds data)))
 
-    {:sections sections
-     :val (find-location sections 77)}
-    )
+        back-section1 (map mapping-to-span
+                           (:map (first reverse-sections)))
+        
+        back-section2 (sort-by #(first %) back-section1)
+
+        back-section3 (reduce concat (map do-range back-section2)) ; Note this evaluates in lazy fashion...
+
+        within (fn [span
+                    v]
+                 "Checks if v is within span [start range]"
+                 (let [[start length] span] 
+                   (and (>= v start) (< v (+ start length)))))
+
+        ]
+
+    (let [backtracks (map #(find-location reverse-sections %) (range))
+
+          check-if-seed (fn [bval]
+                          (let [span (u/find-first #(within % bval) seed-ranges)]
+                            (if (not (nil? span))
+                              {:span span 
+                               :location bval})
+                            ))
+
+          do-check (fn [location]
+                     (let [seed (find-location reverse-sections location)
+                           is-seed (check-if-seed seed)]
+                       (if is-seed
+                         {:seed seed
+                          :location location }
+                         nil))) 
+
+
+
+          ]
+      ;; TODO: need to find lowest entry in all section (reversed), e.g. if back section is below min 
+
+      (println
+       (first
+        (drop-while nil?
+                    (map do-check (range)))))
+
+      )
+
+    ;; {:seed     391178261,
+    ;;  :location 20191103 -> Too high}
 
   )
+
+
+  )
+
+;; If failing... check <= vs < in inside checks
