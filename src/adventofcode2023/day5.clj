@@ -4,7 +4,10 @@
             [clojure.set :as set]))
 
 (def input (u/get-lines "resources/day5.txt"))
+{:seed 391178260, :location 20191102}
+
 (def input (u/get-lines "resources/day5.sample.txt"))
+{:seed 82, :location 46}
 
 (let [parse-input (fn [lines]
                     (let [sections (filter #(not(= '("") %))
@@ -51,7 +54,7 @@
                                  dst :dst
                                  rng :rng} mapping
                                 offset (- v src)
-                                inside (and (>= offset 0) (<= v (+ src rng)))
+                                inside (and (>= offset 0) (< v (+ src rng)))
                                 new (+ dst offset)]
                             ;;                            (println "inside:" inside ", offset:" offset, "new:" new)
                             (if inside
@@ -66,7 +69,7 @@
                           apas (map #(do-single-mapping % v) mappings)
                           new-val (u/find-first #(not (nil? %)) apas)]
 
-                      ;;(println section "to" to "->" new-val)
+                      ;; (println (name from) v "to" (name to) "->" new-val)
                       (if (nil? new-val)
                         v
                         new-val) 
@@ -130,7 +133,6 @@
                                   #(reverse (map reverse-section
                                                  %))))
 
-
         ;; Target
         seed-ranges  (sort-by #(first %) (partition 2 (:seeds data)))
 
@@ -165,25 +167,12 @@
                          {:seed seed
                           :location location }
                          nil))) 
-
-
-
           ]
-      ;; TODO: need to find lowest entry in all section (reversed), e.g. if back section is below min 
-
+      ;; Slow execution with full input due to too high input range, approx 5min)
       (println
        (first
         (drop-while nil?
                     (map do-check (range)))))
-
       )
-
-    ;; {:seed     391178261,
-    ;;  :location 20191103 -> Too high}
-
+    )
   )
-
-
-  )
-
-;; If failing... check <= vs < in inside checks
