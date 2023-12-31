@@ -28,27 +28,45 @@
 (s/def ::card (set labels))
 (s/def ::hand (s/coll-of ::card :into [] :count 5))
 
+(defn freqs
+  [col]
+  (->> col frequencies (map second) sort reverse ))
+
 ;; Five of a kind, where all five cards have the same label: AAAAA
 (defn all-same?
-  [seq]
-  (= 1 (count (set seq))))
+  [col]
+  (= 1 (count (set col))))
 
-(s/def ::five-of-a-kind (s/and ::hand
-                               all-same?))
+(defn four-equal?
+  [col]
+  (= [4 1]
+     (freqs col)))
 
-(def five-of-a-kind-hand [\A \A \A \Q \A \A])
+(defn full-house?
+  [col]
+  (= [3 2]
+     (freqs col)))
 
-(s/explain ::five-of-a-kind five-of-a-kind-hand  )
+(s/def ::five-of-a-kind (s/and ::hand all-same?))
+(s/def ::four-of-a-kind (s/and ::hand four-equal?))
+(s/def ::full-house (s/and ::hand full-house?))
 
 
+(let [hand [ \8 \8 \8 \8 \A ]]
 
-(s/valid? ::card \K ) ; true
-(s/valid? ::hand [\K \A \A \A \2] ) ; true
+  (s/valid? ::full-house hand)
+  )
 
-(def s (s/cat :forty-two #{42}
-              :odds (s/+ ::odd?)
-              :m (s/keys :req-un [::a ::b ::c])
-              :oes (s/* (s/cat :o ::odd? :e ::even?))
-              :ex (s/alt :odd ::odd? :even ::even?)))
 
-;;user=> (s/conform s [42 11 13 15 {:a 1 :b 2 :c 3} 1 2 3 42 43 44 11])
+;; (def five-of-a-kind-hand [\A \A \A \Q \A \A])
+;; (s/explain ::five-of-a-kind five-of-a-kind-hand  )
+;; (s/valid? ::card \K ) ; true
+;; (s/valid? ::hand [\K \A \A \A \2] ) ; true
+
+(def ranks (s/cat :five-of-a-kind ::five-of-a-kind
+:invalid (s/* )))
+
+
+(s/conform ranks [[\A \A \A \A \A]
+[\A \A \A \B \A]
+])
