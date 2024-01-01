@@ -71,6 +71,7 @@
   (= [1 1 1 1 1]
      (freqs col)))
 
+;; Maps rank to ordering int
 (def ranks {:five-of-a-kind 7
             :four-of-a-kind 6
             :full-house 5
@@ -123,14 +124,46 @@
                        (let [{[rank cards] :hand
                               bid :bid} hand]
                          {:rank rank
+                          :rank-no (ranks rank)
                           :cards cards
                           :bid bid})) 
-      ]
+
+      hands (map transform-hand
+                 (s/conform ::game hands))
+
+
+      card-strength-sorter (fn [a b]
+                             (println (:cards a), (:cards b))
+                             (loop [a-cards (:cards a)
+                                    b-cards (:cards b)]
+                               (if (empty? a-cards)
+                                 0
+                                 (let [ac (int (first a-cards))
+                                       bc (int (first b-cards))]
+                                   (cond (> ac bc) -1
+                                         (< ac bc) 1
+                                         :else (recur
+                                                (rest a-cards)
+                                                (rest b-cards)))))
+                               ))
+
+      handsorter (fn [a b]
+                   ;; first sort by :rank-no
+                   (let [[ra rb] (map :rank-no [a b])]
+                     (cond (< ra rb) -1
+                           (> ra rb) 1
+                           :else (card-strength-sorter a b))))
+
+      a (nth hands 2)
+      b (nth hands 3)]
 
   ;;  (map :bid hands)
 
-  ;; (map transform-hand)
-  (s/conform ::game hands)
+  ;;  (apply println [a b]) 
+  ;; (handsorter a b)
+  (map :cards
+       (sort handsorter hands))
+
 
   ;; (s/explain ::game hands)
 
