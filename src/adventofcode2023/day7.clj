@@ -20,6 +20,8 @@
 ;; A hand consists of five cards from the following set
 (def labels [\A, \K, \Q, \J, \T, \9, \8, \7, \6, \5, \4, \3, \2 ])
 
+
+
 ;; Every hand is exactly one type. From strongest to weakest, they are:
 ;; 
 ;; Five of a kind, where all five cards have the same label: AAAAA
@@ -71,8 +73,8 @@
   (= [1 1 1 1 1]
      (freqs col)))
 
-;; Maps rank to ordering int
-(def ranks {:five-of-a-kind 7
+;; Maps types to ordering int
+(def types {:five-of-a-kind 7
             :four-of-a-kind 6
             :full-house 5
             :three-of-a-kind 4
@@ -121,10 +123,10 @@
       hands (map parse-line input)
 
       transform-hand (fn[hand]
-                       (let [{[rank cards] :hand
+                       (let [{[typ cards] :hand
                               bid :bid} hand]
-                         {:rank rank
-                          :rank-no (ranks rank)
+                         {:type typ
+                          :type-no (types typ)
                           :cards cards
                           :bid bid})) 
 
@@ -147,8 +149,7 @@
                                ))
 
       handsorter (fn [a b]
-                   ;; first sort by :rank-no
-                   (let [[ra rb] (map :rank-no [a b])]
+                   (let [[ra rb] (map :type-no [a b])]
                      (cond (< ra rb) -1
                            (> ra rb) 1
                            :else (card-strength-sorter a b))))
@@ -157,17 +158,17 @@
 
       calc-wins (fn [hands]
                   (map 
-                   #(let [[hand num] %
-                          num (long (inc num))]
+                   #(let [[hand rank] %
+                          rank (inc rank)]
                       (merge hand
-                             {:win (* (:bid hand)  num)
-                              :num num }))
+                             {:win (* (:bid hand) rank)
+                              :rank rank }))
                    (zipmap 
                     hands
                     (range)))
                   )
 
-      hands-with-win-info (calc-wins sorted-hands)
+      hands-with-win-info (sort-by :num (calc-wins sorted-hands))
 
       pt-1  (reduce + (map :win hands-with-win-info))
       ]
@@ -175,7 +176,16 @@
   (map :win hands-with-win-info)
   (println pt-1)
   
-  (first hands-with-win-info)
+  (frequencies
+   (map :type hands-with-win-info))
+
+  (filter #(= (:type %) :five-of-a-kind ) hands-with-win-info)
+
+  ( println
+   (map #(str % "\n")
+        (take 10 hands-with-win-info)
+        ))
+
 
   )
 
