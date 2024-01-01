@@ -133,7 +133,6 @@
 
 
       card-strength-sorter (fn [a b]
-                             (println (:cards a), (:cards b))
                              (loop [a-cards (:cards a)
                                     b-cards (:cards b)]
                                (if (empty? a-cards)
@@ -154,18 +153,31 @@
                            (> ra rb) 1
                            :else (card-strength-sorter a b))))
 
-      a (nth hands 2)
-      b (nth hands 3)]
+      sorted-hands (sort handsorter hands)
 
-  ;;  (map :bid hands)
+      calc-wins (fn [hands]
+                  (map 
+                   #(let [[hand num] %
+                          num (long (inc num))]
+                      (merge hand
+                             {:win (* (:bid hand)  num)
+                              :num num }))
+                   (zipmap 
+                    hands
+                    (range)))
+                  )
 
-  ;;  (apply println [a b]) 
-  ;; (handsorter a b)
-  (map :cards
-       (sort handsorter hands))
+      hands-with-win-info (calc-wins sorted-hands)
 
+      pt-1  (reduce + (map :win hands-with-win-info))
+      ]
 
-  ;; (s/explain ::game hands)
+  (map :win hands-with-win-info)
+  (println pt-1)
+  
+  (first hands-with-win-info)
 
   )
 
+;; 252889686 too low.
+;; 248110814 too low (reversed)
