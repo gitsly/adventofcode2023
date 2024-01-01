@@ -18,9 +18,12 @@
 
 
 ;; A hand consists of five cards from the following set
-(def labels [\A, \K, \Q, \J, \T, \9, \8, \7, \6, \5, \4, \3, \2 ])
-
-
+(def labels 
+  (let [names [\A, \K, \Q, \J, \T, \9, \8, \7, \6, \5, \4, \3, \2 ]]
+    (into (hash-map)
+          (zipmap 
+           (reverse names)
+           (range)))))
 
 ;; Every hand is exactly one type. From strongest to weakest, they are:
 ;; 
@@ -32,7 +35,7 @@
 ;; One pair, where two cards share one label, and the other three cards have a different label from the pair and each other: A23A4
 ;; High card, where all cards' labels are distinct: 23456
 
-(s/def ::card (set labels))
+(s/def ::card (set (keys labels)))
 (s/def ::cards (s/coll-of ::card :into [] :count 5))
 
 (defn freqs
@@ -139,10 +142,10 @@
                                     b-cards (:cards b)]
                                (if (empty? a-cards)
                                  0
-                                 (let [ac (int (first a-cards))
-                                       bc (int (first b-cards))]
-                                   (cond (> ac bc) -1
-                                         (< ac bc) 1
+                                 (let [ac (labels (first a-cards))
+                                       bc (labels (first b-cards))]
+                                   (cond (< ac bc) -1
+                                         (> ac bc) 1
                                          :else (recur
                                                 (rest a-cards)
                                                 (rest b-cards)))))
@@ -173,21 +176,9 @@
       pt-1  (reduce + (map :win hands-with-win-info))
       ]
 
-  (map :win hands-with-win-info)
-  (println pt-1)
-  
-  (frequencies
-   (map :type hands-with-win-info))
-
-  (filter #(= (:type %) :five-of-a-kind ) hands-with-win-info)
-
-  ( println
-   (map #(str % "\n")
-        (take 10 hands-with-win-info)
-        ))
-
-
+  pt-1
   )
 
 ;; 252889686 too low.
 ;; 248110814 too low (reversed)
+;; 253313241 -> correct
