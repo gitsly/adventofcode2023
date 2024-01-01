@@ -79,25 +79,42 @@
 (s/def ::one-pair        (s/and ::hand one-pair?))
 (s/def ::high-card       (s/and ::hand high-card?))
 
+(s/def ::hand (s/or 
+               :five-of-a-kind      ::five-of-a-kind   
+               :four-of-a-kind      ::four-of-a-kind
+               :full-house          ::full-house
+               :three-of-a-kind     ::three-of-a-kind
+               :two-pair            ::two-pair
+               :one-pair            ::one-pair
+               :high-card           ::high-card
+               ))
 
-(s/def ::ranks
-  (s/coll-of
-   (s/or 
-    :five-of-a-kind      ::five-of-a-kind   
-    :four-of-a-kind      ::four-of-a-kind
-    :full-house          ::full-house
-    :three-of-a-kind     ::three-of-a-kind
-    :two-pair            ::two-pair
-    :one-pair            ::one-pair
-    :high-card           ::high-card
-    )))
+(s/conform ::rank  [\K \K \6 \7 \7])
+
+(s/def ::bid number?)
+
+(s/def ::hand-and-bid (s/keys :req-un [::hand ::bid]))
+
+
+(s/conform ::hand-and-bid {:hand [\K \K \6 \7 \7]
+                           :bid 123 } )
+
+(s/def ::game (s/coll-of ::hand-and-bid))
 
 (let [parse-line (fn[line]
-                   (let [[hand bid] (str/split line #"\s")]
-                     (vec (seq hand))))
+                   (let [[hand bid] (str/split line #"\s")
+                         hand (vec (seq hand))
+                         bid (Integer/parseInt bid)]
+                     {:hand hand
+                      :bid bid}))
 
       hands (map parse-line input)
       ]
 
-  (s/conform ::ranks hands))
+  ;;  (map :bid hands)
+
+  (s/conform ::game hands)
+  ;; (s/explain ::game hands)
+
+  )
 
