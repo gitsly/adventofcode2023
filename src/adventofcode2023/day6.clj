@@ -16,7 +16,7 @@
 (def pt2     {:time 44826981 :record-distance 202107611381458})
 (def sample-pt2 {:time 71530  :record-distance 940200 })
 
-(def input sample-pt2 )
+(def input pt2 )
 
 
 (let [get-distance (fn [race
@@ -46,7 +46,8 @@
 
       ]
 
-  (do-race (first input))
+  (println 
+   (do-race  input))
 
   )
 

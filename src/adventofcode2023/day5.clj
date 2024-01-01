@@ -169,10 +169,9 @@
                          nil))) 
           ]
       ;; Slow execution with full input due to too high input range, approx 5min)
-      (println
-       (first
-        (drop-while nil?
-                    (map do-check (range)))))
+      (first
+       (drop-while nil?
+                   (map do-check (range))))
       )
     )
   )

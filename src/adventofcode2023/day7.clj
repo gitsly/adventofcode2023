@@ -31,7 +31,7 @@
 ;; High card, where all cards' labels are distinct: 23456
 
 (s/def ::card (set labels))
-(s/def ::hand (s/coll-of ::card :into [] :count 5))
+(s/def ::cards (s/coll-of ::card :into [] :count 5))
 
 (defn freqs
   [col]
@@ -71,13 +71,22 @@
   (= [1 1 1 1 1]
      (freqs col)))
 
-(s/def ::five-of-a-kind  (s/and ::hand all-same?))
-(s/def ::four-of-a-kind  (s/and ::hand four-equal?))
-(s/def ::full-house      (s/and ::hand full-house?))
-(s/def ::three-of-a-kind (s/and ::hand three-of-a-kind?))
-(s/def ::two-pair        (s/and ::hand two-pair?))
-(s/def ::one-pair        (s/and ::hand one-pair?))
-(s/def ::high-card       (s/and ::hand high-card?))
+(def ranks {:five-of-a-kind 7
+            :four-of-a-kind 6
+            :full-house 5
+            :three-of-a-kind 4
+            :two-pair 3
+            :one-pair 2
+            :high-card 1})
+
+
+(s/def ::five-of-a-kind  (s/and ::cards all-same?))
+(s/def ::four-of-a-kind  (s/and ::cards four-equal?))
+(s/def ::full-house      (s/and ::cards full-house?))
+(s/def ::three-of-a-kind (s/and ::cards three-of-a-kind?))
+(s/def ::two-pair        (s/and ::cards two-pair?))
+(s/def ::one-pair        (s/and ::cards one-pair?))
+(s/def ::high-card       (s/and ::cards high-card?))
 
 (s/def ::hand (s/or 
                :five-of-a-kind      ::five-of-a-kind   
@@ -89,7 +98,7 @@
                :high-card           ::high-card
                ))
 
-(s/conform ::rank  [\K \K \6 \7 \7])
+(s/conform ::hand  [\K \K \6 \7 \7])
 
 (s/def ::bid number?)
 
@@ -109,11 +118,20 @@
                       :bid bid}))
 
       hands (map parse-line input)
+
+      transform-hand (fn[hand]
+                       (let [{[rank cards] :hand
+                              bid :bid} hand]
+                         {:rank rank
+                          :cards cards
+                          :bid bid})) 
       ]
 
   ;;  (map :bid hands)
 
+  ;; (map transform-hand)
   (s/conform ::game hands)
+
   ;; (s/explain ::game hands)
 
   )
