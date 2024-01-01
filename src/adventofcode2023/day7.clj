@@ -32,7 +32,6 @@
   [col]
   (->> col frequencies (map second) sort reverse ))
 
-;; Five of a kind, where all five cards have the same label: AAAAA
 (defn all-same?
   [col]
   (= 1 (count (set col))))
@@ -47,26 +46,57 @@
   (= [3 2]
      (freqs col)))
 
-(s/def ::five-of-a-kind (s/and ::hand all-same?))
-(s/def ::four-of-a-kind (s/and ::hand four-equal?))
-(s/def ::full-house (s/and ::hand full-house?))
+(defn three-of-a-kind?
+  [col]
+  (= [3 1 1]
+     (freqs col)))
+
+(defn two-pair?
+  [col]
+  (= [2 2 1]
+     (freqs col)))
+
+(defn one-pair?
+  [col]
+  (= [2 1 1 1]
+     (freqs col)))
+
+(defn high-card?
+  [col]
+  (= [1 1 1 1 1]
+     (freqs col)))
+
+(s/def ::five-of-a-kind  (s/and ::hand all-same?))
+(s/def ::four-of-a-kind  (s/and ::hand four-equal?))
+(s/def ::full-house      (s/and ::hand full-house?))
+(s/def ::three-of-a-kind (s/and ::hand three-of-a-kind?))
+(s/def ::two-pair        (s/and ::hand two-pair?))
+(s/def ::one-pair        (s/and ::hand one-pair?))
+(s/def ::high-card       (s/and ::hand high-card?))
 
 
-(let [hand [ \8 \8 \8 \8 \A ]]
+(s/def ::ranks
+  (s/coll-of
+   (s/or 
+    :five-of-a-kind      ::five-of-a-kind   
+    :four-of-a-kind      ::four-of-a-kind
+    :full-house          ::full-house
+    :three-of-a-kind     ::three-of-a-kind
+    :two-pair            ::two-pair
+    :one-pair            ::one-pair
+    :high-card           ::high-card
+    )))
 
-  (s/valid? ::full-house hand)
+(let [hands [
+             [\2 \3 \4 \3 \2]
+             [\A \A \A \Q \A]
+             [\A \A \A \A \A]
+             ;; [\8 \8 \8 \8 \A]
+             ;; [\T \T \T \9 \8]
+             ;; [\2 \3 \4 \5 \6]
+             ]]
+  ;;  (s/explain ::ranks hands)
+  (s/conform ::ranks hands)
   )
 
 
-;; (def five-of-a-kind-hand [\A \A \A \Q \A \A])
-;; (s/explain ::five-of-a-kind five-of-a-kind-hand  )
-;; (s/valid? ::card \K ) ; true
-;; (s/valid? ::hand [\K \A \A \A \2] ) ; true
-
-(def ranks (s/cat :five-of-a-kind ::five-of-a-kind
-:invalid (s/* )))
-
-
-(s/conform ranks [[\A \A \A \A \A]
-[\A \A \A \B \A]
-])
