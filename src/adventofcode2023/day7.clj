@@ -12,6 +12,11 @@
                    "KTJJT 220"
                    "QQQJA 483"])
 
+(def input (u/get-lines "resources/day7.txt"))
+
+(def input sample-input)
+
+
 ;; A hand consists of five cards from the following set
 (def labels [\A, \K, \Q, \J, \T, \9, \8, \7, \6, \5, \4, \3, \2 ])
 
@@ -87,16 +92,12 @@
     :high-card           ::high-card
     )))
 
-(let [hands [
-             [\2 \3 \4 \3 \2]
-             [\A \A \A \Q \A]
-             [\A \A \A \A \A]
-             ;; [\8 \8 \8 \8 \A]
-             ;; [\T \T \T \9 \8]
-             ;; [\2 \3 \4 \5 \6]
-             ]]
-  ;;  (s/explain ::ranks hands)
-  (s/conform ::ranks hands)
-  )
+(let [parse-line (fn[line]
+                   (let [[hand bid] (str/split line #"\s")]
+                     (vec (seq hand))))
 
+      hands (map parse-line input)
+      ]
+
+  (s/conform ::ranks hands))
 
