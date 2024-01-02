@@ -16,10 +16,9 @@
 
 (def input sample-input)
 
-
 ;; A hand consists of five cards from the following set
 (def labels 
-  (let [names [\A, \K, \Q, \J, \T, \9, \8, \7, \6, \5, \4, \3, \2 ]]
+  (let [names [\A \K \Q \T \9 \8 \7 \6 \5 \4 \3 \2 \J ]]
     (into (hash-map)
           (zipmap 
            (reverse names)
@@ -116,6 +115,7 @@
 
 (s/def ::game (s/coll-of ::hand-and-bid))
 
+
 (let [parse-line (fn[line]
                    (let [[hand bid] (str/split line #"\s")
                          hand (vec (seq hand))
@@ -123,19 +123,37 @@
                      {:hand hand
                       :bid bid}))
 
-      hands (map parse-line input)
+      raw-hands (map parse-line input)
+
+      jokerize (fn [cards]
+                 (let [to-replace (first (last (filter #(not (= \J (first %)))
+                                                       (sort-by second
+                                                                (frequencies 
+                                                                 cards)))))
+                       to-replace (if to-replace
+                                    to-replace
+                                    \K)
+                       jokerized (replace {\J to-replace} cards)
+                       ]
+                   ;; (println "Jokerize " cards "replace:" to-replace "gives:" jokerized)
+                   jokerized
+                   ))
+
+      get-type (fn[cards]
+                 "Returns type for vector of cards"
+                 (first
+                  (s/conform ::hand cards)))
 
       transform-hand (fn[hand]
-                       (let [{[typ cards] :hand
-                              bid :bid} hand]
+                       (let [{cards :hand
+                              bid :bid} hand
+                             typ (get-type (jokerize cards))]
                          {:type typ
                           :type-no (types typ)
                           :cards cards
                           :bid bid})) 
 
-      hands (map transform-hand
-                 (s/conform ::game hands))
-
+      hands (map transform-hand raw-hands)
 
       card-strength-sorter (fn [a b]
                              (loop [a-cards (:cards a)
@@ -173,12 +191,16 @@
 
       hands-with-win-info (sort-by :num (calc-wins sorted-hands))
 
-      pt-1  (reduce + (map :win hands-with-win-info))
+      answer (reduce + (map :win hands-with-win-info))
       ]
 
-  pt-1
-  )
+  answer)
 
 ;; 252889686 too low.
 ;; 248110814 too low (reversed)
 ;; 253313241 -> correct
+
+;; PT2
+;; 253334359 -> Too low
+;; 253334359 -> even with changed out strong card 
+;; 253362743 -> Correct
